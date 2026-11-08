@@ -1,0 +1,11 @@
+{
+  "name": "interalliance-gateway-vr",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Unofficial interactive INTERalliance orientation, playable on desktop and WebXR browsers",
+  "scripts": {
+    "test": "node --check app.js && node --check content.js && node tests/check-content.cjs && node tests/check-app.cjs",
+    "serve": "python3 -m http.server 8080"
+  },
+  "license": "UNLICENSED"
+}
