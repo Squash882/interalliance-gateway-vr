@@ -70,7 +70,7 @@ This checks JavaScript syntax, validates data structure and source links, and ex
 
 ## Publishing via GitHub Pages
 
-1. Create a new repository named `interalliance-gateway-vr` and upload these files to its `main` branch (preserving their folder structure).
+1. The source files are already committed to [`Squash882/interalliance-gateway-vr`](https://github.com/Squash882/interalliance-gateway-vr) on `main`.
 2. Open **Settings → Pages** in the repository.
 3. Select **GitHub Actions** as your Pages build-and-deployment source. The included deployment workflow publishes the four static application files on every push to `main`.
 4. When GitHub provides the HTTPS Pages URL, open it on desktop first, then on the headset. Add `?desktop=1` for a predictable laptop-only presentation.
