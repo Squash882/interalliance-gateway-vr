@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>INTERalliance: The Gateway | Interactive VR Introduction</title>
+  <meta name="description" content="An interactive, unofficial VR orientation to INTERalliance's history, mission, programs, leadership, and opportunities." />
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="brand" aria-label="INTERalliance Gateway">
+    <div class="mini">INTERALLIANCE / IMMERSIVE INTRO</div>
+    <h1>THE GATEWAY <span style="color:#65ead0">✦</span></h1>
+    <div class="sub">Five exhibits · Ten challenges · Your path into tech.</div>
+  </div>
+  <section class="hud" aria-label="Exhibit information and game controls">
+    <div class="hud-header">
+      <div class="eyebrow" id="eyebrow">01 / THE ORIGINS</div>
+      <h2 id="heading">Where it all began</h2>
+      <p class="lede" id="subtitle">Explore a student-powered Cincinnati technology community.</p>
+      <div class="progress" id="progress" aria-label="Exhibit completion"></div>
+      <div class="meta-row"><div class="compact-header" id="progressText">0 of 5 exhibits completed</div><div class="score" id="score">0 XP</div></div>
+    </div>
+    <div class="hud-main">
+      <div class="round-pill" id="roundCount">Checkpoint 1 / 2</div>
+      <div class="story" id="story"></div>
+      <ul class="facts" id="facts"></ul>
+      <div class="q-label" id="questLabel">CHECKPOINT CHALLENGE</div>
+      <div class="question" id="question"></div>
+      <div id="missionSteps" class="mission-steps" aria-label="Interactive mission progress"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="path-result" id="pathResult" hidden></div>
+      <div style="margin-top:17px"><a id="source" class="link" target="_blank" rel="noopener noreferrer">Explore the official INTERalliance source ↗</a></div>
+      <div class="disclaimer">Unofficial educational prototype. Facts from INTERalliance's public pages; confirm specifics with ILC before presenting as official.</div>
+    </div>
+    <div class="hud-footer">
+      <div class="footer-meta" id="footerMeta">Select an exhibit to begin.</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn" id="reset" title="Clear progress and restart">Reset</button>
+        <button class="btn" id="speak" title="Read the selected exhibit aloud">🔊 Narrate</button>
+        <button class="btn primary" id="next">Next →</button>
+      </div>
+    </div>
+  </section>
+  <div id="runtimeNotice" class="runtime-notice" role="status" hidden>3D library unavailable. Desktop learning mode still works; reconnect to the internet for the VR environment.</div>
+  <div id="fallbackScene" class="fallback-scene" aria-label="Desktop exhibit selector">
+    <div class="fallback-stars" aria-hidden="true"></div>
+    <div class="fallback-floor" aria-hidden="true"></div>
+    <div class="fallback-center">
+      <div class="gateway-symbol" aria-hidden="true"><div class="symbol-core">✦</div></div>
+      <p class="world-eyebrow">YOUR ADVENTURE STARTS HERE</p>
+      <h2 class="world-title">Explore the network.</h2>
+      <p class="world-lede">A journey from Cincinnati's tech history to your own next step.<br>Select a portal to explore an exhibit.</p>
+      <nav class="portal-deck" aria-label="Explore the five INTERalliance exhibits">
+        <button id="portal-0" class="portal" style="--portal:#65ead0" type="button"><span class="portal-number">01</span><span class="portal-icon">◈</span><span class="portal-label">HISTORY</span><span class="portal-check">✓</span></button>
+        <button id="portal-1" class="portal" style="--portal:#79c5ff" type="button"><span class="portal-number">02</span><span class="portal-icon">◎</span><span class="portal-label">MISSION</span><span class="portal-check">✓</span></button>
+        <button id="portal-2" class="portal" style="--portal:#ffd589" type="button"><span class="portal-number">03</span><span class="portal-icon">✧</span><span class="portal-label">PROGRAMS</span><span class="portal-check">✓</span></button>
+        <button id="portal-3" class="portal" style="--portal:#b49aff" type="button"><span class="portal-number">04</span><span class="portal-icon">⌘</span><span class="portal-label">ILC HQ</span><span class="portal-check">✓</span></button>
+        <button id="portal-4" class="portal" style="--portal:#ff9ec2" type="button"><span class="portal-number">05</span><span class="portal-icon">↗</span><span class="portal-label">YOUR PATH</span><span class="portal-check">✓</span></button>
+      </nav>
+      <div class="world-hint">INTERACTIVE ORIENTATION <span>●</span> 10 CHECKPOINTS <span>●</span> YOUR FUTURE IN TECH</div>
+    </div>
+  </div>
+  <div class="bottom-hint">Choose answers with <b>A/B/C</b> · Kiosks <b>1–5</b> · <b>→</b> continues · <b>N</b> narrates · <b>Enter VR</b> on supported headsets</div>
+
+  <a-scene background="color: #061220" fog="type: exponential; color: #071729; density: .013" renderer="colorManagement: true; antialias: true" vr-mode-ui="enabled: true">
+    <a-sky color="#061220"></a-sky>
+    <a-entity light="type: ambient; color: #c8dafa; intensity: .72"></a-entity>
+    <a-entity light="type: point; color: #65ead0; intensity: 1.2; distance: 22" position="-6 6 -4"></a-entity>
+    <a-entity light="type: point; color: #aa8fff; intensity: 1.1; distance: 22" position="6 5 -5"></a-entity>
+    <a-plane position="0 -0.04 -5" rotation="-90 0 0" width="45" height="45" color="#0b1d2f" material="roughness: .8"></a-plane>
+    <a-cylinder position="0 -0.10 0" radius="2.2" height=".12" color="#102c40" material="metalness:.6; roughness:.35"></a-cylinder>
+    <a-torus position="0 0 0" rotation="90 0 0" radius="1.95" radius-tubular=".025" color="#65ead0" material="emissive:#65ead0; emissiveIntensity:.7"></a-torus>
+    <a-ring position="0 .012 -2.8" rotation="-90 0 0" radius-inner=".60" radius-outer=".72" color="#aa8fff" material="emissive:#aa8fff; emissiveIntensity:.5; side:double"></a-ring>
+
+    <!-- Floating central exhibit board: all important information is duplicated inside VR. -->
+    <a-entity id="board" position="0 2.57 -4.45">
+      <a-plane width="7.40" height="3.60" color="#081b30" material="opacity:.96; transparent:true; metalness:.12" ></a-plane>
+      <a-plane width="7.42" height=".045" position="0 1.80 .015" color="#65ead0" material="emissive:#65ead0; emissiveIntensity:.8"></a-plane>
+      <a-plane width="7.42" height=".025" position="0 -1.78 .015" color="#587c9a"></a-plane>
+      <a-text id="vrEyebrow" value="01 / ORIGINS" position="-3.40 1.46 .04" color="#65ead0" width="5.9" wrap-count="56" font="roboto" letter-spacing="2"></a-text>
+      <a-text id="vrHeading" value="WHERE IT ALL BEGAN" position="-3.40 1.03 .04" color="#ffffff" width="6.8" wrap-count="34" font="roboto"></a-text>
+      <a-text id="vrStory" value="" position="-3.40 .67 .04" color="#bcd1e7" width="6.9" wrap-count="62" font="roboto" baseline="top"></a-text>
+      <a-text id="vrFact" value="" position="-3.40 .14 .04" color="#ffd589" width="5.8" wrap-count="62" font="roboto" baseline="top"></a-text>
+      <a-text id="vrFactLabel" value="FACT 1 OF 5" position="2.20 .27 .06" color="#65ead0" width="1.7" align="center" font="roboto"></a-text>
+      <a-plane id="vrFactNext" class="clickable" position="2.6 -.06 .07" width="1.35" height=".30" color="#27475d" material="side:double"></a-plane>
+      <a-text value="NEXT FACT" position="2.6 -.11 .09" align="center" width="2.3" color="#ffffff"></a-text>
+      <a-text id="vrQuestion" value="" position="-3.40 -.43 .04" color="#65ead0" width="6.8" wrap-count="60" font="roboto" baseline="top"></a-text>
+      <a-text id="vrMiniInfo" position="-3.40 -.77 .04" value="" color="#ffd589" width="5.8" wrap-count="55" font="roboto"></a-text>
+      <a-text id="vrFeedback" value="AIM AT A CHOICE BELOW OR CLICK IN THE SIDE PANEL" position="-3.40 -1.56 .04" color="#9fbbd6" width="6.8" wrap-count="71" font="roboto"></a-text>
+      <a-entity id="vrOptions"></a-entity>
+      <a-plane id="vrNext" class="clickable" position="2.5 -1.56 .11" width="1.55" height=".29" color="#2e5268" material="side:double"></a-plane>
+      <a-text id="vrNextLabel" position="2.5 -1.61 .13" align="center" value="CONTINUE" width="2.4" color="#ffffff"></a-text>
+    </a-entity>
+
+    <a-entity id="kioskRoot"></a-entity>
+    <a-entity id="missionRoot"></a-entity>
+    <!-- Decorative city / network geometry -->
+    <a-entity id="city">
+      <a-box position="-10 1.4 -13" depth="2" width="1.8" height="2.8" color="#13263c" material="metalness:.4"></a-box>
+      <a-box position="-7.8 2.4 -15" depth="1.6" width="1.8" height="4.8" color="#102a40"></a-box>
+      <a-box position="-5.3 1.3 -15" depth="1.8" width="1.5" height="2.6" color="#182e45"></a-box>
+      <a-box position="5.6 2.0 -15" depth="1.8" width="1.8" height="4.0" color="#152c48"></a-box>
+      <a-box position="8 1.1 -15" depth="1.5" width="1.9" height="2.2" color="#12243a"></a-box>
+      <a-box position="10.4 2.7 -16" depth="2.1" width="1.5" height="5.4" color="#172b45"></a-box>
+      <a-torus position="0 5.4 -10" radius="4.3" radius-tubular=".015" color="#5a70a0" material="opacity:.4; transparent:true" animation="property: rotation; to: 0 0 360; loop:true; dur:45000; easing:linear"></a-torus>
+    </a-entity>
+
+    <a-entity id="rig" position="0 0 0">
+      <a-entity id="playerCamera" camera look-controls wasd-controls="acceleration: 26" position="0 1.65 0">
+        <a-entity cursor="fuse:true; fuseTimeout:1400" raycaster="objects:.clickable; far:16" position="0 0 -1" geometry="primitive:ring; radiusInner:.008; radiusOuter:.015" material="color:#65ead0; shader:flat; opacity:.65"></a-entity>
+      </a-entity>
+      <a-entity laser-controls="hand:right" raycaster="objects:.clickable; far:16" line="color:#65ead0"></a-entity>
+      <a-entity laser-controls="hand:left" raycaster="objects:.clickable; far:16" line="color:#aa8fff"></a-entity>
+    </a-entity>
+    <a-entity cursor="rayOrigin:mouse" raycaster="objects:.clickable; far:16"></a-entity>
+  </a-scene>
+
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
