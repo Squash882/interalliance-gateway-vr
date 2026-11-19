@@ -80,19 +80,29 @@ pick(0);pick(1);assert.equal(status().missionStep,2);assert.equal(status().xp,60
 pick(2);assert.equal(status().missionStep,3);assert.equal(status().xp,700);
 next();pick(1);next();pick(0);
 assert.equal(status().xp,900);
-switchTo(4);pick(1); // Choose LEAD instead of the default BUILD.
-assert.equal(status().xp,1000);
+switchTo(4);
+assert.equal(status().signalPhase,'lock');
+assert.equal(get('signalPanel').hidden,false,'Signal instrument panel should be visible');
+pick(0);assert.equal(status().missionStep,0,'Wrong carrier should not advance');
+pick(1);assert.equal(status().missionStep,1,'Correct carrier unlocks memory');
+assert.equal(status().signalPhase,'memory');
+pick(2);pick(0);pick(1);pick(2);
+assert.equal(status().missionStep,5);
+assert.equal(status().xp,1000,'Signal Run grants 100 XP');
+next();pick(1); // Choose the LEAD finale path.
+assert.equal(status().xp,1100);
 assert.equal(status().path,'LEAD');
 assert.equal(status().completed,5);
 assert.equal(get('pathResult').hidden,false);
 assert.match(get('pathResult').children[0].textContent,/LEADER/);
-const saved=JSON.parse(storage.get('interalliance-gateway-progress-v3'));
+const saved=JSON.parse(storage.get('interalliance-gateway-progress-v4'));
 assert.equal(saved.missionStep[0][0],3);
 assert.equal(saved.missionStep[3][0],3);
+assert.equal(saved.missionStep[4][0],5);
 get('reset').click();
 assert.equal(status().completed,0);
 assert.equal(status().xp,0);
 assert.equal(status().path,null);
 assert.equal(status().missionStep,0);
 assert.equal(get('pathResult').hidden,true);
-console.log('PASS: timeline order, duplicate protection, operations dispatch, all 10 checkpoints, custom path, persistence, reset.');
+console.log('PASS: timeline order, duplicate protection, operations dispatch, all 11 checkpoints and Signal Run, custom path, persistence, reset.');
