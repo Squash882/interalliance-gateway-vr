@@ -18,7 +18,13 @@ for (const chapter of chapters) {
     assert.ok(round.question && round.vrQuestion);
     assert.equal(round.options.length,3, `${chapter.id} needs three controller targets`);
     round.options.forEach(option => assert.ok(option.label && option.why));
-    if (round.kind === 'timeline') {
+    if (round.kind === 'signal') {
+      multiStepMissions++;
+      assert.equal(round.signal.target,1);
+      assert.equal(round.signal.seconds,45);
+      assert.deepEqual(Array.from(round.signal.sequence),[2,0,1,2]);
+      assert.equal(round.options.length,3);
+    } else if (round.kind === 'timeline') {
       multiStepMissions++;
       assert.equal(round.sequence.length,3);
       assert.deepEqual(Array.from(round.sequence).sort(),[0,1,2], 'timeline must use each milestone once');
@@ -32,10 +38,10 @@ for (const chapter of chapters) {
     }
   }
 }
-assert.equal(challengeCount,10);
-assert.equal(multiStepMissions,2);
+assert.equal(challengeCount,11);
+assert.equal(multiStepMissions,3);
 assert.match(chapters[0].facts.join(' '), /2007/);
 assert.match(chapters[3].facts.join(' '), /SYSTEMS/);
 assert.match(chapters[3].facts.join(' '), /FINANCE/);
 assert.deepEqual(Array.from(chapters[4].rounds[0].options, x=>x.path), ['BUILD','LEAD','LAUNCH']);
-console.log('PASS: sourced 5 exhibits, 10 checkpoints, two multi-step missions, six teams, three paths.');
+console.log('PASS: sourced 5 exhibits, 10 checkpoints, three multi-step missions including Signal Run, six teams, three paths.');
