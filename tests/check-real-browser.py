@@ -48,6 +48,6 @@ with sync_playwright() as p:
     assert page.locator('#pathResult').is_visible()
     assert not errors, f'Browser JS errors: {errors}'
     page.keyboard.press('1')
-    page.screenshot(path=str(root.parent/'interalliance_gateway_desktop_preview.png'))
+    page.screenshot(path=str(root/'interalliance_gateway_desktop_preview.png'))
     browser.close()
 print('PASS: real Chromium DOM, all eleven checkpoints including Signal Run, result, and desktop screenshot')
