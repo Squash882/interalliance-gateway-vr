@@ -13,7 +13,7 @@
   <div class="brand" aria-label="INTERalliance Gateway">
     <div class="mini">INTERALLIANCE / IMMERSIVE INTRO</div>
     <h1>THE GATEWAY <span style="color:#65ead0">✦</span></h1>
-    <div class="sub">Five exhibits · Ten challenges · Your path into tech.</div>
+    <div class="sub">Five exhibits · Eleven challenges · Restore the network.</div>
   </div>
   <section class="hud" aria-label="Exhibit information and game controls">
     <div class="hud-header">
@@ -30,6 +30,13 @@
       <div class="q-label" id="questLabel">CHECKPOINT CHALLENGE</div>
       <div class="question" id="question"></div>
       <div id="missionSteps" class="mission-steps" aria-label="Interactive mission progress"></div>
+      <section id="signalPanel" class="signal-panel" aria-label="Signal Run mission" hidden>
+        <div class="signal-head"><strong id="signalMode">01 / FREQUENCY LOCK</strong><span id="signalTimer" role="timer">45s REMAINING</span></div>
+        <div class="signal-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="signal-pulse" aria-hidden="true"><span>◈ LEFT</span><span>◆ CENTER</span><span>✦ RIGHT</span></div>
+        <p id="signalPattern" class="signal-readout">TARGET 88.8 MHz</p>
+        <button id="replaySignal" class="btn signal-replay" type="button" hidden>↻ REPLAY MEMORY PATTERN</button>
+      </section>
       <div class="choices" id="choices"></div>
       <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
       <div class="path-result" id="pathResult" hidden></div>
@@ -61,7 +68,7 @@
         <button id="portal-3" class="portal" style="--portal:#b49aff" type="button"><span class="portal-number">04</span><span class="portal-icon">⌘</span><span class="portal-label">ILC HQ</span><span class="portal-check">✓</span></button>
         <button id="portal-4" class="portal" style="--portal:#ff9ec2" type="button"><span class="portal-number">05</span><span class="portal-icon">↗</span><span class="portal-label">YOUR PATH</span><span class="portal-check">✓</span></button>
       </nav>
-      <div class="world-hint">INTERACTIVE ORIENTATION <span>●</span> 10 CHECKPOINTS <span>●</span> YOUR FUTURE IN TECH</div>
+      <div class="world-hint">IMMERSIVE NETWORK QUEST <span>●</span> 11 CHECKPOINTS <span>●</span> SIGNAL RUN FINALE</div>
     </div>
   </div>
   <div class="bottom-hint">Choose answers with <b>A/B/C</b> · Kiosks <b>1–5</b> · <b>→</b> continues · <b>N</b> narrates · <b>Enter VR</b> on supported headsets</div>
@@ -87,7 +94,7 @@
       <a-text id="vrFact" value="" position="-3.40 .14 .04" color="#ffd589" width="5.8" wrap-count="62" font="roboto" baseline="top"></a-text>
       <a-text id="vrFactLabel" value="FACT 1 OF 5" position="2.20 .27 .06" color="#65ead0" width="1.7" align="center" font="roboto"></a-text>
       <a-plane id="vrFactNext" class="clickable" position="2.6 -.06 .07" width="1.35" height=".30" color="#27475d" material="side:double"></a-plane>
-      <a-text value="NEXT FACT" position="2.6 -.11 .09" align="center" width="2.3" color="#ffffff"></a-text>
+      <a-text id="vrFactNextLabel" value="NEXT FACT" position="2.6 -.11 .09" align="center" width="2.3" color="#ffffff"></a-text>
       <a-text id="vrQuestion" value="" position="-3.40 -.43 .04" color="#65ead0" width="6.8" wrap-count="60" font="roboto" baseline="top"></a-text>
       <a-text id="vrMiniInfo" position="-3.40 -.77 .04" value="" color="#ffd589" width="5.8" wrap-count="55" font="roboto"></a-text>
       <a-text id="vrFeedback" value="AIM AT A CHOICE BELOW OR CLICK IN THE SIDE PANEL" position="-3.40 -1.56 .04" color="#9fbbd6" width="6.8" wrap-count="71" font="roboto"></a-text>
