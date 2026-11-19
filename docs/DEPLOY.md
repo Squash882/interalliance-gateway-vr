@@ -31,3 +31,9 @@ Use the **actual headset and controller** planned for the meeting.
 - Hardware/WebXR compatibility, text legibility and controller feel **remain unverified** without actual physical-device tests.
 - Program eligibility and opportunities can change; the orientation links to the official website instead of claiming live open applications.
 - Browser progress is local to that device/profile, not shared or cloud synced.
+
+## Gala-ready Signal Run
+
+Press **5** for the final mission. Lock **CENTER / 88.8 MHz** within 45 seconds, then repeat **RIGHT → LEFT → CENTER → RIGHT**. The sequence appears briefly and can be replayed at any time. Incorrect input resets only the memory segment. Press **Next challenge** to choose BUILD, LEAD, or LAUNCH.
+
+If `configure-pages` fails with **Get Pages site failed / Not Found**, enable repository GitHub Pages at **Settings → Pages → Source → GitHub Actions**. This is a missing repository setting, not a JavaScript failure. The local desktop mode remains the fallback.
