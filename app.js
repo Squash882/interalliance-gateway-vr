@@ -348,12 +348,24 @@
       return;
     }
     const step = currentMissionStep();
+    if (round.kind === 'signal' && step === 0 && Date.now() >= signalDeadline) {
+      signalDeadline = Date.now() + round.signal.seconds * 1000;
+      state.feedback[chapterIndex] = 'Window expired. New transmission received—lock the carrier again.';
+      renderHUD();
+      return;
+    }
     const isCorrect = round.kind === 'timeline' ? choiceIndex === round.sequence[step] :
-      round.kind === 'dispatch' ? choiceIndex === round.tickets[step].answer : Boolean(option.correct);
+      round.kind === 'dispatch' ? choiceIndex === round.tickets[step].answer :
+      round.kind === 'signal' ? (step === 0 ? choiceIndex === round.signal.target : choiceIndex === round.signal.sequence[step - 1]) :
+      Boolean(option.correct);
     state.answers[chapterIndex][roundIndex] = choiceIndex;
     if (isCorrect) {
       if (missionLength(round)) {
         state.missionStep[chapterIndex][roundIndex]++;
+        if (round.kind === 'signal' && step === 0) {
+          signalDeadline = 0;
+          memoryRevealUntil = Date.now() + 6500;
+        }
       }
       const taskDone = !missionLength(round) || currentMissionStep() === missionLength(round);
       if (taskDone) {
@@ -362,7 +374,7 @@
       } else {
         state.answers[chapterIndex][roundIndex] = -1;
       }
-      const explanation = round.kind === 'dispatch' ? round.tickets[step].why : option.why;
+      const explanation = round.kind === 'dispatch' ? round.tickets[step].why : round.kind === 'signal' ? (step === 0 ? 'Carrier locked! Memorize the beacon pattern before it disappears.' : 'Beacon confirmed. Network synchronizing.') : option.why;
       const suffix = taskDone ? (done(chapterIndex) ? ' EXHIBIT COMPLETE!' : ' Select NEXT CHALLENGE to continue.')
         : ` ${missionLength(round) - currentMissionStep()} step(s) remain.`;
       state.feedback[chapterIndex] = `✓ ${explanation}${suffix}`;
@@ -372,6 +384,11 @@
       }
     } else if (previouslyPassed) {
       state.feedback[chapterIndex] = 'You already cleared this checkpoint. Select a correct answer to review it.';
+    } else if (round.kind === 'signal' && step > 0) {
+      state.missionStep[chapterIndex][roundIndex] = 1;
+      memoryRevealUntil = Date.now() + 6500;
+      state.answers[chapterIndex][roundIndex] = -1;
+      state.feedback[chapterIndex] = '⚡ Sequence scrambled! Echo progress reset. Watch the retransmission.';
     } else {
       state.feedback[chapterIndex] = `Try again. ${round.kind === 'dispatch' ? 'Look at which team owns this responsibility.' : option.why}`;
     }
@@ -405,6 +422,8 @@
     state.path = null;
     state.factIndex = chapters.map(() => 0);
     state.completionCelebrated = false;
+    signalDeadline = 0;
+    memoryRevealUntil = 0;
     persist();
     renderHUD();
   }
@@ -440,6 +459,7 @@
   $('next').addEventListener('click', advance);
   $('reset').addEventListener('click', reset);
   $('speak').addEventListener('click', narrate);
+  $('replaySignal').addEventListener('click', replaySignal);
   $('vrNext').addEventListener('click', advance);
   $('vrFactNext').addEventListener('click', nextFact);
   window.addEventListener('keydown', (event) => {
@@ -465,6 +485,7 @@
   buildKiosks();
   sceneInitialized = true;
   renderHUD();
+  if (typeof window.setInterval === 'function') window.setInterval(tickSignal, 250);
   // Read-only debug/status API used by the dependency-free smoke tests.
   window.GATEWAY_STATUS = () => ({
     chapter: chapters[state.current].id,
@@ -472,7 +493,8 @@
     completed: chapters.filter((_, i) => done(i)).length,
     xp: score(),
     path: state.path,
-    missionStep: currentMissionStep()
+    missionStep: currentMissionStep(),
+    signalPhase: currentRound().kind === 'signal' ? (state.passed[state.current][state.round[state.current]] ? 'restored' : currentMissionStep() === 0 ? 'lock' : 'memory') : null
   });
 })();
 
