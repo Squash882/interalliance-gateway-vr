@@ -473,6 +473,68 @@
   scene.addEventListener('enter-vr', () => document.body.classList.add('vr-active'));
   scene.addEventListener('exit-vr', () => document.body.classList.remove('vr-active'));
 
+
+  // Backup input path: A-Frame's synthetic cursor click can occasionally fail
+  // even when the mouse or controller ray is visibly pointing at a target.
+  // Use the same clickable scene targets and existing game click handlers.
+  function installPointerFallback() {
+    if (!window.THREE || !scene || !scene.canvas || !scene.camera) return;
+    let recentSelection = 0;
+    scene.addEventListener('click', (event) => {
+      if (event.target && event.target.classList &&
+          event.target.classList.contains('clickable')) {
+        recentSelection = Date.now();
+      }
+    }, true);
+
+    function clickFromRay(ray) {
+      if (!ray || !window.THREE) return;
+      const targetByMesh = new Map();
+      scene.querySelectorAll('.clickable').forEach((el) => {
+        const mesh = el.getObject3D && el.getObject3D('mesh');
+        if (mesh && el.object3D && el.object3D.visible) targetByMesh.set(mesh, el);
+      });
+      const hits = ray.intersectObjects(Array.from(targetByMesh.keys()), true);
+      for (const hit of hits) {
+        let node = hit.object;
+        while (node && !targetByMesh.has(node)) node = node.parent;
+        if (node) {
+          targetByMesh.get(node).emit('click', { pointerFallback: true }, false);
+          return;
+        }
+      }
+    }
+
+    scene.canvas.addEventListener('click', (event) => {
+      if (event.button !== 0 || (scene.is && scene.is('vr-mode'))) return;
+      const clickedAt = Date.now();
+      window.setTimeout(() => {
+        if (recentSelection >= clickedAt - 100) return;
+        const rect = scene.canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        const ray = new window.THREE.Raycaster();
+        ray.setFromCamera(new window.THREE.Vector2(x, y), scene.camera);
+        clickFromRay(ray);
+      }, 25);
+    });
+    scene.querySelectorAll('[laser-controls]').forEach((controller) => {
+      controller.addEventListener('triggerdown', () => {
+        const pressedAt = Date.now();
+        window.setTimeout(() => {
+          if (recentSelection >= pressedAt - 100) return;
+          const ray = controller.components &&
+            controller.components.raycaster &&
+            controller.components.raycaster.raycaster;
+          clickFromRay(ray);
+        }, 25);
+      });
+    });
+  }
+  if (scene.hasLoaded) installPointerFallback();
+  else scene.addEventListener('loaded', installPointerFallback);
+
   // A-Frame does not have to load for HTML learning mode to remain usable.
   const desktopMode = !window.AFRAME || (window.location && new URLSearchParams(window.location.search).has('desktop'));
   if (desktopMode) {
