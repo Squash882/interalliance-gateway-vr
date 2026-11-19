@@ -214,7 +214,7 @@
         color: activeColor, material: 'side:double'
       }, root);
       make('a-text', {
-        value: option.label.toUpperCase().replace(' · ', ' / '), align: 'center', color: '#ffffff',
+        value: round.kind === 'signal' && currentMissionStep() > 0 ? ['LEFT','CENTER','RIGHT'][choiceIndex] : option.label.toUpperCase().replace(' · ', ' / '), align: 'center', color: '#ffffff',
         width: '2.02', 'wrap-count': '22', position: `${positions[choiceIndex]} -1.1 .12`
       }, root);
       button.addEventListener('click', () => answer(choiceIndex));
@@ -268,7 +268,7 @@
     $('choices').replaceChildren(...round.options.map((option, index) => {
       const b = document.createElement('button');
       b.className = 'choice';
-      b.textContent = option.label;
+      b.textContent = round.kind === 'signal' && currentMissionStep() > 0 ? ['LEFT','CENTER','RIGHT'][index] : option.label;
       if (isSelectedTimelineItem(round, index)) { b.classList.add('locked'); b.setAttribute('aria-label', option.label + ' already activated'); }
       else if (state.answers[state.current][roundIndex] === index) b.classList.add(state.passed[state.current][roundIndex] ? 'correct' : 'wrong');
       b.addEventListener('click', () => answer(index));
