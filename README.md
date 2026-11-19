@@ -26,11 +26,11 @@ For supported VR headsets such as Meta Quest, publish this static site over **HT
 | The Mission | The nonprofit's mission and Inspire / Network / Train / Employ / Retain framework | 2 |
 | The Opportunities | Chapters, TechOlympics, training, networking, and paid INTERnships | 2 |
 | The Leadership | The six ILC teams and what each does | 3 |
-| Your Future | Personalized BUILD, LEAD, or LAUNCH entry path | 1 |
+| Your Future | SIGNAL RUN frequency lock, spatial memory, and BUILD / LEAD / LAUNCH | 2 |
 
-**10 scored checkpoints total**, including **two multi-step interactive missions**: a historical time-machine puzzle (2007 → 2008 → 2010) and an ILC operations desk that routes incoming requests to Systems, Data, and Finance. Two more leadership checkpoints cover Chapters and Marketing.
+**11 scored checkpoints total**, including **three multi-step interactive missions**: a historical time-machine puzzle (2007 → 2008 → 2010) and an ILC operations desk that routes incoming requests to Systems, Data, and Finance. Two more leadership checkpoints cover Chapters and Marketing. The finale is **SIGNAL RUN**: a timed 45-second carrier lock followed by a spatial sequence (RIGHT → LEFT → CENTER → RIGHT). Wrong memory input restarts only the memory segment, with unlimited replay.
 
-**10 challenges total**, 100 XP per completed challenge, persistable progress, restart button, optional narration, a VR fact carousel, and a VR-accessible continue control.
+**11 challenges total**, 100 XP per completed challenge, persistable progress, restart button, optional narration, a VR fact carousel, and a VR-accessible continue control.
 
 ### Controls
 
@@ -67,6 +67,14 @@ npm test
 This checks JavaScript syntax, validates data structure and source links, and exercises the full 10-challenge game flow, a wrong answer, scoring, custom path selection, and reset using lightweight DOM simulations. These tests pass. A real Chromium desktop DOM smoke test (with A-Frame intentionally omitted) also **passes** in this environment using `python tests/check-real-browser.py`. This checks the offline desktop fallback and game interaction, not the WebXR renderer.
 
 **Not yet tested:** Quest/other physical headset rendering, controller ergonomics, audio on Safari and headset browsers, and public GitHub Pages deployment.
+
+## Gala-day launch plan
+
+- Run locally with `python3 -m http.server 8080` and open `http://localhost:8080/?desktop=1` for a dependable offline desktop experience.
+- To enable public hosting, open repository **Settings → Pages → Build and deployment → Source → GitHub Actions**, then rerun the deployment. A missing Pages site is a GitHub setting, not a failed test.
+- Press **1** for history, **4** for ILC HQ, and **5** for SIGNAL RUN. Select **CENTER / 88.8 MHz**, then repeat **RIGHT → LEFT → CENTER → RIGHT**, then choose a personal path.
+- Completing every exhibit unlocks the full 1100 XP outcome.
+- Headset controller support must be verified on the gala headset before presenting it as tested.
 
 ## Publishing via GitHub Pages
 
