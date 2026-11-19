@@ -2,6 +2,7 @@
 Requires: pip install playwright, and a local Chromium binary.
 """
 from pathlib import Path
+import shutil
 from playwright.sync_api import sync_playwright
 root=Path(__file__).resolve().parents[1]
 html=(root/'index.html').read_text()
@@ -10,9 +11,11 @@ html=html.replace('<link rel="stylesheet" href="styles.css" />',f'<style>{(root/
 for name in ['content.js','app.js']:
     html=html.replace(f'<script src="{name}"></script>',f'<script>{(root/name).read_text()}</script>')
 with sync_playwright() as p:
-    browser=p.chromium.launch(executable_path='/usr/bin/chromium', headless=True,
+    browser=p.chromium.launch(executable_path=shutil.which('chromium') or shutil.which('google-chrome') or shutil.which('google-chrome-stable'), headless=True,
       args=['--no-sandbox','--disable-gpu','--disable-dev-shm-usage'])
     page=browser.new_page(viewport={'width':1440,'height':900},device_scale_factor=1)
+    errors=[]
+    page.on('pageerror', lambda err: errors.append(str(err)))
     page.set_content(html, wait_until='domcontentloaded', timeout=15000)
     page.wait_for_function('typeof GATEWAY_STATUS === "function"',timeout=10000)
     assert page.evaluate('GATEWAY_STATUS().xp')==0
@@ -26,22 +29,25 @@ with sync_playwright() as p:
     # Complete every remaining chapter using the genuine Chromium DOM.
     for chapter_num in range(1,5):
         page.keyboard.press(str(chapter_num+1))
-        rounds=page.evaluate(f'GATEWAY_CHAPTERS[{chapter_num}].rounds.map(r=>({{kind:r.kind||"quiz", answers:r.options.map(o=>o.correct), sequence:r.sequence||null, tickets:r.tickets||null}}))')
+        rounds=page.evaluate(f'GATEWAY_CHAPTERS[{chapter_num}].rounds.map(r=>({{kind:r.kind||"quiz", answers:r.options.map(o=>o.correct), sequence:r.sequence||null, tickets:r.tickets||null, signal:r.signal||null}}))')
         for index, round in enumerate(rounds):
             if round['kind']=='timeline':
                 picks=round['sequence']
             elif round['kind']=='dispatch':
                 picks=[ticket['answer'] for ticket in round['tickets']]
+            elif round['kind']=='signal':
+                picks=[round['signal']['target']]+round['signal']['sequence']
             else:
                 picks=[round['answers'].index(True)]
             for choice in picks:
                 page.locator('#choices .choice').nth(choice).click()
             if index<len(rounds)-1:
                 page.locator('#next').click()
-    assert page.evaluate('GATEWAY_STATUS().xp')==1000
+    assert page.evaluate('GATEWAY_STATUS().xp')==1100
     assert page.evaluate('GATEWAY_STATUS().completed')==5
     assert page.locator('#pathResult').is_visible()
+    assert not errors, f'Browser JS errors: {errors}'
     page.keyboard.press('1')
     page.screenshot(path=str(root.parent/'interalliance_gateway_desktop_preview.png'))
     browser.close()
-print('PASS: real Chromium DOM, all ten checkpoints, result, and desktop screenshot')
+print('PASS: real Chromium DOM, all eleven checkpoints including Signal Run, result, and desktop screenshot')
