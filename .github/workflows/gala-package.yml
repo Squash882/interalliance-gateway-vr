@@ -1,0 +1,36 @@
+name: Gala Full Browser & Download Package
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Playwright Chromium
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install chromium
+      - name: Test real browser game flow
+        run: python tests/check-real-browser.py
+      - name: Verify single-file package
+        run: |
+          test -s Gala-Standalone.html
+          grep -q 'id="signalPanel"' Gala-Standalone.html
+          grep -q 'SIGNAL RUN' Gala-Standalone.html
+      - name: Package downloadable gala demo
+        uses: actions/upload-artifact@v4
+        with:
+          name: INTERalliance-Gala-Game
+          path: |
+            Gala-Standalone.html
+            interalliance_gateway_desktop_preview.png
+            README.md
+          retention-days: 30
