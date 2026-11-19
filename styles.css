@@ -96,3 +96,21 @@ body.no-vr .fallback-scene{display:block}
 body.no-vr .runtime-notice{top:auto;bottom:56px;left:25px;max-width:530px;padding:8px 12px;font-size:11px;opacity:.78}
 @media(max-width:800px){body.no-vr .runtime-notice{display:none}}
 
+
+/* Gala final mission */
+.signal-panel{border:1px solid #53d9c8a8;border-radius:14px;background:radial-gradient(ellipse at 60% 0,#1a5864 0,#0b273c 80%);padding:14px;margin:0 0 14px;box-shadow:inset 0 0 36px #3af5d010,0 8px 24px #0004;overflow:hidden}
+.signal-panel[hidden],.signal-replay[hidden]{display:none!important}
+.signal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;color:#b8fff0;font:800 10px/1.3 system-ui;letter-spacing:1.4px}
+#signalTimer{color:#f9d78b;border:1px solid #b89b52a8;border-radius:99px;padding:5px 9px;white-space:nowrap;background:#3b321d80;font-variant-numeric:tabular-nums}
+.signal-wave{display:flex;align-items:center;justify-content:center;gap:6px;height:58px;filter:drop-shadow(0 0 8px #6dfce755);margin:7px 0 3px}
+.signal-wave i{height:9px;width:4px;background:#73efdb;border-radius:5px;animation:signalWave 800ms ease-in-out infinite alternate;animation-delay:calc(var(--i, 1)*83ms)}
+.signal-wave i:nth-child(3n){--i:5}.signal-wave i:nth-child(3n + 1){--i:2}.signal-wave i:nth-child(4n){--i:8}.signal-wave i:nth-child(5n){--i:4}
+@keyframes signalWave{0%{height:6px;opacity:.45}100%{height:48px;opacity:1}}
+.signal-memory .signal-wave i{background:#d2a6ff}
+.signal-cleared .signal-wave i{background:#fce19c;animation-duration:1700ms}
+.signal-pulse{display:flex;justify-content:space-between;gap:5px;color:#a0c0d1;font-size:9px;font-weight:850;letter-spacing:.6px}
+.signal-pulse span{border:1px solid #36637a;border-radius:6px;padding:5px 8px;background:#13374c91;text-align:center;flex:1}
+.signal-readout{color:#f6fbfe;font-size:12px;line-height:1.5;margin:12px 0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;min-height:18px}
+.signal-replay{width:100%;background:#1e5768;border-color:#5edccd;color:#e7ffff;letter-spacing:.7px;font-size:11px;font-weight:850;margin-top:2px}
+.signal-replay:hover{background:#27778a}
+@media(prefers-reduced-motion:reduce){.signal-wave i{animation:none;height:22px}}
