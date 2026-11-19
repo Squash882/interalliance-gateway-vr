@@ -174,15 +174,26 @@ window.GATEWAY_CHAPTERS = Object.freeze([
   {
     id: 'path', name: 'Your Future', short: 'YOUR PATH', title: 'Choose your route',
     kicker: '05 / YOUR FUTURE', color: '#ff9ec2',
-    subtitle: 'There is no single right way into a career in tech.',
-    story: 'You have explored the organization; now choose a starting point. Your recommendation is not an application or automatic admission—it is a direction for your next step. Check program dates and eligibility on INTERalliance’s website.',
-    vr: 'THE FINAL PORTAL: Choose your route—BUILD, LEAD, or LAUNCH. Your choice opens a tailored next step.',
+    subtitle: 'Restore the network in Signal Run, then choose your route into tech.',
+    story: 'Final mission: Cincinnati’s tech network needs a fresh signal. Find the right carrier under time pressure, then echo a four-beacon spatial code from memory. Complete the run to choose your personal next step. Your recommendation is a direction—not an application or admission.',
+    vr: 'SIGNAL RUN. Recover the 88.8 megahertz carrier in 45 seconds. Memorize the beacon order. Then unlock BUILD, LEAD, or LAUNCH.',
     facts: [
       'BUILD · Join a chapter, explore challenges and workshops.',
       'LEAD · Run a chapter activity and explore ILC involvement.',
       'LAUNCH · Attend events, make connections, and check INTERnship applications.'
     ],
     rounds: [
+      {
+        kind: 'signal',
+        question: 'SIGNAL RUN: The regional tech network has gone dark. Lock the 88.8 MHz carrier before the window closes, then memorize and repeat the spatial beacon sequence.',
+        vrQuestion: 'SIGNAL RUN: LOCK 88.8 MHZ, THEN ECHO THE BEACONS.',
+        signal: { target: 1, frequency: '88.8 MHz', seconds: 45, sequence: [2, 0, 1, 2] },
+        options: [
+          { label: 'LEFT · 72.4 MHz', why: 'Wrong frequency. Tune to the frequency on the mission readout.' },
+          { label: 'CENTER · 88.8 MHz', why: 'Signal acquired! The center beacon matches 88.8 MHz.' },
+          { label: 'RIGHT · 104.2 MHz', why: 'This is interference. Match the mission readout instead.' }
+        ]
+      },
       {
         question: 'Which part of INTERalliance would you explore first?',
         vrQuestion: 'FINAL PORTAL: CHOOSE YOUR FUTURE.',
@@ -194,7 +205,7 @@ window.GATEWAY_CHAPTERS = Object.freeze([
       }
     ],
     source: 'https://interalliance.org/chapters/',
-    narration: 'Your future is yours to choose. Build by joining a chapter and competing; lead by organizing chapter activities and exploring I L C; or launch by building career skills, meeting professionals, and exploring INTERnships.'
+    narration: 'Welcome to Signal Run. Restore the network by tuning the eighty eight point eight megahertz frequency, then repeat the spatial beacon pattern from memory. Finally choose your route. Build through chapters and competitions, lead through I L C and events, or launch with career connections and INTERnships.'
   }
 ]);
 
