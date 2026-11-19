@@ -196,10 +196,11 @@
     $('vrHeading').setAttribute('value', chapter.title.toUpperCase());
     $('vrHeading').setAttribute('color', chapter.color);
     $('vrStory').setAttribute('value', chapter.vr);
-    $('vrFact').setAttribute('value', chapter.facts[state.factIndex[state.current]]);
-    $('vrFactLabel').setAttribute('value', `FACT ${state.factIndex[state.current] + 1} OF ${chapter.facts.length}`);
+    $('vrFact').setAttribute('value', round.kind === 'signal' ? signalReadout(round) : chapter.facts[state.factIndex[state.current]]);
+    $('vrFactLabel').setAttribute('value', round.kind === 'signal' ? 'LIVE LINK' : `FACT ${state.factIndex[state.current] + 1} OF ${chapter.facts.length}`);
+    $('vrFactNextLabel').setAttribute('value', round.kind === 'signal' ? 'REPLAY SIGNAL' : 'NEXT FACT');
     $('vrQuestion').setAttribute('value', missionPrompt(round, true));
-    $('vrMiniInfo').setAttribute('value', missionProgressLabel(round));
+    $('vrMiniInfo').setAttribute('value', round.kind === 'signal' ? signalTimer(round) : missionProgressLabel(round));
     $('vrFeedback').setAttribute('value', state.feedback[state.current] || 'AIM AT A CHOICE; SELECT USING CONTROLLER TRIGGER, GAZE, OR MOUSE.');
     const root = $('vrOptions');
     while (root.firstChild) root.firstChild.remove();
@@ -228,6 +229,7 @@
 
   function nextFact() {
     const i = state.current;
+    if (currentRound().kind === 'signal' && currentMissionStep() > 0) { replaySignal(); return; }
     state.factIndex[i] = (state.factIndex[i] + 1) % chapters[i].facts.length;
     renderVR();
   }
@@ -243,6 +245,7 @@
     const chapter = chapters[state.current];
     const round = currentRound();
     const roundIndex = state.round[state.current];
+    if (round.kind === 'signal') ensureSignal(round);
     $('eyebrow').textContent = chapter.kicker;
     $('heading').textContent = chapter.title;
     $('subtitle').textContent = chapter.subtitle;
@@ -253,12 +256,12 @@
       item.textContent = fact;
       return item;
     }));
-    $('questLabel').textContent = state.current === 4 ? 'YOUR PERSONALIZED PATH' : round.kind === 'timeline' ? 'REPAIR THE TIMELINE' : round.kind === 'dispatch' ? 'ILC OPERATIONS DESK' : 'MISSION CHECKPOINT';
+    $('questLabel').textContent = round.kind === 'signal' ? '⚡ SIGNAL RUN / RESTORE THE NETWORK' : state.current === 4 ? 'YOUR PERSONALIZED PATH' : round.kind === 'timeline' ? 'REPAIR THE TIMELINE' : round.kind === 'dispatch' ? 'ILC OPERATIONS DESK' : 'MISSION CHECKPOINT';
     $('question').textContent = missionPrompt(round);
     $('missionSteps').replaceChildren(...Array.from({length: missionLength(round)}, (_, step) => {
       const pip = document.createElement('span');
       pip.className = 'mission-step' + (step < currentMissionStep() ? ' complete' : step === currentMissionStep() ? ' current' : '');
-      pip.textContent = `${step < currentMissionStep() ? '✓ ' : ''}${round.kind === 'timeline' ? 'ERA' : 'TICKET'} ${step + 1}`;
+      pip.textContent = `${step < currentMissionStep() ? '✓ ' : ''}${round.kind === 'timeline' ? 'ERA' : round.kind === 'signal' ? (step === 0 ? 'LOCK' : 'ECHO') : 'TICKET'} ${round.kind === 'signal' ? (step === 0 ? '' : step) : step + 1}`;
       return pip;
     }));
     $('source').href = chapter.source;
@@ -290,6 +293,17 @@
     $('next').textContent = nextLabel();
     $('feedback').textContent = state.feedback[state.current];
     $('feedback').classList.toggle('show', Boolean(state.feedback[state.current]));
+    const activeSignal = round.kind === 'signal';
+    $('signalPanel').hidden = !activeSignal;
+    if (activeSignal) {
+      const cleared = state.passed[state.current][roundIndex];
+      $('signalMode').textContent = cleared ? 'NETWORK RESTORED' : currentMissionStep() === 0 ? '01 / FREQUENCY LOCK' : '02 / SPATIAL MEMORY';
+      $('signalTimer').textContent = signalTimer(round);
+      $('signalPattern').textContent = signalReadout(round);
+      $('replaySignal').hidden = currentMissionStep() === 0 || cleared;
+      $('signalPanel').classList.toggle('signal-memory', currentMissionStep() > 0);
+      $('signalPanel').classList.toggle('signal-cleared', cleared);
+    }
     renderPathResult();
     renderVR();
   }
@@ -298,10 +312,10 @@
     let result = $('pathResult');
     if (!result) return;
     result.replaceChildren();
-    result.hidden = !(allComplete() && state.path);
+    result.hidden = !(state.path && state.passed[4][chapters[4].rounds.length - 1]);
     if (result.hidden) return;
     const data = PATH_RESOURCES[state.path];
-    const title = document.createElement('strong'); title.textContent = `GATEWAY UNLOCKED · ${data.title}`;
+    const title = document.createElement('strong'); title.textContent = `${allComplete() ? 'GATEWAY UNLOCKED' : 'YOUR NEXT STEP'} · ${data.title}`;
     const description = document.createElement('p'); description.textContent = data.description;
     const link = document.createElement('a'); link.href = data.url; link.textContent = data.link + ' ↗';
     link.setAttribute('target', '_blank'); link.setAttribute('rel', 'noopener noreferrer');
@@ -310,6 +324,7 @@
 
   function chooseExhibit(i) {
     state.current = Math.max(0, Math.min(chapters.length - 1, i));
+    if (currentRound().kind === 'signal' && currentMissionStep() === 0) signalDeadline = 0;
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     persist();
     renderHUD();
