@@ -22,9 +22,9 @@
 
 "The following exhibits explain why the organization exists, what students can do, and how ILC's six teams operate. At the ILC operations desk, players route a website emergency, a data-cleanup request, and a budgeting task to the correct teams. These are simulated, not historical incidents."
 
-**Show personalization (20 seconds)**
+**Show Signal Run and personalization (30 seconds)**
 
-"At the end, every new student gets a starting path based on their interests: building, leadership, or career development."
+"The finale is a real mission: tune a signal, memorize physical beacons, and then choose a starting path—building, leadership or career development."
 
 **Close (20 seconds)**
 
@@ -41,7 +41,7 @@
 
 1. **Start at History**: activate 2007, then 2008, then 2010. This demonstrates a real interactive puzzle.
 2. **Press 4**: jump to ILC HQ and route the three simulated tickets: Systems, Data, Finance.
-3. **Press 5**: choose LEAD. The personalized result and official ILC link appear when all checkpoints are cleared; for a short demo, show the result in a separate pre-cleared browser profile, or describe it without claiming it is unlocked.
+3. **Press 5**: show SIGNAL RUN: CENTER / 88.8 MHz, then RIGHT → LEFT → CENTER → RIGHT. Press Next challenge, choose LEAD, and demonstrate the personalized recommendation. The full GATEWAY UNLOCKED ending requires clearing the other exhibits.
 4. If the 3D engine or headset fails, append `?desktop=1` to the URL and continue in the branded desktop interface.
 
 Avoid spending half the meeting clicking through ten questions. Demonstrate two mechanics, explain the complete journey, then discuss the team's needs.
