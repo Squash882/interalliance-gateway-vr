@@ -9,13 +9,13 @@
 
   const $ = (id) => document.getElementById(id);
   const scene = document.querySelector('a-scene');
-  const STORE_KEY = 'interalliance-gateway-progress-v3';
+  const STORE_KEY = 'interalliance-gateway-progress-v4';
   const PATH_RESOURCES = {
     BUILD: { title: 'THE BUILDER', description: 'Explore a school chapter, try competitions and workshops, then check out TechOlympics.', url: 'https://interalliance.org/chapters/', link: 'Explore school chapters' },
     LEAD: { title: 'THE LEADER', description: 'Organize a chapter activity, then investigate the six ILC teams and how to get involved.', url: 'https://interalliance.org/programs/ilc/', link: 'Explore ILC' },
     LAUNCH: { title: 'THE LAUNCHER', description: 'Build a professional network, try training opportunities, and review paid INTERnship eligibility.', url: 'https://interalliance.org/programs/', link: 'Explore INTERalliance programs' }
   };
-  const missionLength = (round) => round.kind === 'timeline' ? round.sequence.length : round.kind === 'dispatch' ? round.tickets.length : 0;
+  const missionLength = (round) => round.kind === 'timeline' ? round.sequence.length : round.kind === 'dispatch' ? round.tickets.length : round.kind === 'signal' ? 1 + round.signal.sequence.length : 0;
   const state = {
     current: 0,
     round: chapters.map(() => 0),
@@ -29,6 +29,41 @@
   };
   const kioskElements = [];
   let sceneInitialized = false;
+  let signalDeadline = 0, memoryRevealUntil = 0;
+  function ensureSignal(round) {
+    if (round.kind !== 'signal' || state.passed[state.current][state.round[state.current]]) return;
+    if (currentMissionStep() === 0 && !signalDeadline) signalDeadline = Date.now() + round.signal.seconds * 1000;
+    if (currentMissionStep() > 0 && !memoryRevealUntil) memoryRevealUntil = Date.now() + 6500;
+  }
+  function signalSequence(round) { return round.signal.sequence.map(i => ['LEFT','CENTER','RIGHT'][i]).join(' → '); }
+  function signalReadout(round) {
+    if (state.passed[state.current][state.round[state.current]]) return 'SIGNAL RESTORED · TRANSMISSION COMPLETE';
+    if (currentMissionStep() === 0) return 'FREQUENCY TARGET: 88.8 MHz';
+    return Date.now() < memoryRevealUntil ? 'MEMORIZE: ' + signalSequence(round) : 'PATTERN HIDDEN · REPLAY OR SELECT BEACONS';
+  }
+  function signalTimer(round) {
+    return currentMissionStep() === 0
+      ? Math.max(0, Math.ceil((signalDeadline-Date.now())/1000)) + 's TO LOCK'
+      : 'ECHO ' + (currentMissionStep()-1) + '/' + round.signal.sequence.length;
+  }
+  function replaySignal() {
+    if (currentRound().kind !== 'signal' || currentMissionStep() === 0 || state.passed[state.current][state.round[state.current]]) return;
+    memoryRevealUntil = Date.now() + 6500;
+    renderHUD();
+  }
+  function tickSignal() {
+    if (!sceneInitialized || currentRound().kind !== 'signal') return;
+    const round = currentRound();
+    if (currentMissionStep() === 0 && Date.now() >= signalDeadline) {
+      signalDeadline = Date.now() + round.signal.seconds * 1000;
+      state.feedback[state.current] = 'Signal expired. Fresh 45-second window opened.';
+      renderHUD();
+    }
+    $('signalTimer').textContent = signalTimer(round);
+    $('signalPattern').textContent = signalReadout(round);
+    $('vrMiniInfo').setAttribute('value', signalTimer(round));
+    $('vrFact').setAttribute('value', signalReadout(round));
+  }
 
   function loadProgress() {
     try {
@@ -78,6 +113,12 @@
         ? (forVR ? 'TIMELINE REPAIRED. ALL EVENTS IN ORDER!' : 'Timeline restored! You placed each milestone in its correct historical order.')
         : (forVR ? round.vrQuestion : `${round.question} (${currentMissionStep() + 1} of ${missionLength(round)})`);
     }
+    if (round.kind === 'signal') {
+      if (state.passed[state.current][state.round[state.current]]) return 'SIGNAL RESTORED! CONTINUE TO YOUR PERSONAL PATH.';
+      return currentMissionStep() === 0
+        ? (forVR ? 'SIGNAL RUN: LOCK 88.8 MHZ NOW!' : 'Tune to the 88.8 MHz carrier before time runs out.')
+        : (forVR ? 'SPATIAL MEMORY: ECHO THE NEXT BEACON.' : 'Repeat the remembered beacon positions in order. Echo ' + currentMissionStep() + ' of ' + round.signal.sequence.length + '.');
+    }
     if (round.kind === 'dispatch') {
       const ticket = round.tickets[Math.min(currentMissionStep(), round.tickets.length - 1)];
       return currentMissionStep() === round.tickets.length
@@ -88,7 +129,7 @@
   }
   function missionProgressLabel(round) {
     if (!missionLength(round)) return '';
-    return `${round.kind === 'timeline' ? 'TIMELINE' : 'OPERATIONS'} · ${currentMissionStep()} / ${missionLength(round)} COMPLETE`;
+    return `${round.kind === 'timeline' ? 'TIMELINE' : round.kind === 'signal' ? 'SIGNAL RUN' : 'OPERATIONS'} · ${currentMissionStep()} / ${missionLength(round)} COMPLETE`;
   }
 
   function make(tag, attributes = {}, parent = $('kioskRoot')) {
@@ -140,9 +181,9 @@
         animation: `property:position; to:0 1.12 0; dir:alternate; loop:true; dur:${1300+i*200}; easing:easeInOutSine`
       }, pedestal);
       crystal.addEventListener('click', () => answer(i));
-      const short = round.kind === 'timeline' ? option.label.split(' · ')[0] : option.label.toUpperCase();
+      const short = round.kind === 'timeline' ? option.label.split(' · ')[0] : round.kind === 'signal' ? option.label.split(' · ')[0] : option.label.toUpperCase();
       make('a-text', {value: selected ? '✓ '+short : short, position:'0 1.0 .04', align:'center', color:'#f7ffff', width:'2.6', 'wrap-count':'18'}, pedestal);
-      make('a-text', {value:round.kind === 'timeline' ? 'TIME CAPSULE' : 'ROUTE TO', position:'0 .43 .38', align:'center', color:'#b6e1f5', width:'1.6'}, pedestal);
+      make('a-text', {value:round.kind === 'timeline' ? 'TIME CAPSULE' : round.kind === 'signal' ? 'BEACON' : 'ROUTE TO', position:'0 .43 .38', align:'center', color:'#b6e1f5', width:'1.6'}, pedestal);
     });
   }
 
