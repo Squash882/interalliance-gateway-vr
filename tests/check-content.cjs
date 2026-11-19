@@ -43,5 +43,5 @@ assert.equal(multiStepMissions,3);
 assert.match(chapters[0].facts.join(' '), /2007/);
 assert.match(chapters[3].facts.join(' '), /SYSTEMS/);
 assert.match(chapters[3].facts.join(' '), /FINANCE/);
-assert.deepEqual(Array.from(chapters[4].rounds[0].options, x=>x.path), ['BUILD','LEAD','LAUNCH']);
+assert.deepEqual(Array.from(chapters[4].rounds[1].options, x=>x.path), ['BUILD','LEAD','LAUNCH']);
 console.log('PASS: sourced 5 exhibits, 10 checkpoints, three multi-step missions including Signal Run, six teams, three paths.');
